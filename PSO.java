@@ -14,7 +14,7 @@ import java.util.concurrent.Future;
 public class PSO {
 
     private int bestNum;
-    private float w;
+    private float inertiaWeight;
     private int MAX_GEN;// iteration time
     private int scale;// particle num
 
@@ -56,11 +56,11 @@ public class PSO {
         this.pointNum = cityNum;
         this.MAX_GEN = g;
         this.scale = s;
-        this.w = w;
+        this.inertiaWeight = w;
         this.begin = b;
     }
 
-    public void init(String filename) throws IOException {
+    public void initialize(String filename) throws IOException {
         int[] x;
         int[] y;
         String strbuff;
@@ -253,7 +253,7 @@ public class PSO {
         Vi = listV.get(i);
 
         // wVi+表示获取Vi中size*w取整个交换序列
-        len = (int) (Vi.size() * w);
+        len = (int) (Vi.size() * inertiaWeight);
 
         for (j = 0; j < len; j++) {
             Vii.add(Vi.get(j));

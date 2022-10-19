@@ -72,7 +72,7 @@ public class PSOGUI {
 
                     // pso
                     PSO pso = new PSO(pointNum, generation, particleNum, weight, beta-1);
-                    pso.init(tspData);
+                    pso.initialize(tspData);
                     pso.solve();
                     bestTour = pso.getgbest();
                     bestLength = pso.getvgbest();
