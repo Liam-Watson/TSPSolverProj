@@ -74,8 +74,8 @@ public class PSOGUI {
                     PSO pso = new PSO(pointNum, generation, particleNum, weight, beta-1);
                     pso.init(tspData);
                     pso.solve();
-                    bestTour = pso.getPgd();
-                    bestLength = pso.getvPgd();
+                    bestTour = pso.getgbest();
+                    bestLength = pso.getvgbest();
 
                     bestLengthLabel.setText("Shortest Path: " + bestLength);
 

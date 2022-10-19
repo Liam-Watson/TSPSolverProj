@@ -28,22 +28,22 @@ public class PSO {
     private int[][] oPopulation;// particle swarm
     private ArrayList<ArrayList<SO>> listV;// swap list of each particle
 
-    private int[][] Pd;// best solution of each particle among all generations
-    private int[] vPd;// evaluation value of best solution
+    private int[][] pbest;// best solution of each particle among all generations
+    private int[] vpbest;// evaluation value of best solution
 
-    private int[] Pgd;// global best solution
+    private int[] gbest;// global best solution
 
-    public int[] getPgd() {
+    public int[] getgbest() {
 
-        return Pgd;
+        return gbest;
     }
 
-    public int getvPgd() {
+    public int getvgbest() {
 
-        return vPgd;
+        return vgbest;
     }
 
-    private int vPgd;// evaluation value of global best solution
+    private int vgbest;// evaluation value of global best solution
     private int bestT;// best generation
 
     private int[] fitness;
@@ -76,12 +76,12 @@ public class PSO {
         fitness = new int[scale];
 
         // individual
-        Pd = new int[scale][pointNum];
-        vPd = new int[scale];
+        pbest= new int[scale][pointNum];
+        vpbest= new int[scale];
 
         // global
-        Pgd = new int[pointNum];
-        vPgd = Integer.MAX_VALUE;
+        gbest = new int[pointNum];
+        vgbest = Integer.MAX_VALUE;
 
         bestT = 0;
         t = 0;
@@ -249,7 +249,7 @@ public class PSO {
         ArrayList<SO> Vii = new ArrayList<SO>();
 
         // refresh velocity
-        // Vii=wVi+ra(Pid-Xid)+rb(Pgd-Xid)
+        // Vii=wVi+ra(Pid-Xid)+rb(gbest-Xid)
         Vi = listV.get(i);
 
         // wVi+表示获取Vi中size*w取整个交换序列
@@ -260,7 +260,7 @@ public class PSO {
         }
 
         // Pid-Xid
-        ArrayList<SO> a = minus(Pd[i], oPopulation[i]);
+        ArrayList<SO> a = minus(pbest[i], oPopulation[i]);
         ra = random.nextFloat();
 
         // ra(Pid-Xid)
@@ -270,11 +270,11 @@ public class PSO {
             Vii.add(a.get(j));
         }
 
-        // Pgd-Xid
-        ArrayList<SO> b = minus(Pgd, oPopulation[i]);
+        // gbest-Xid
+        ArrayList<SO> b = minus(gbest, oPopulation[i]);
         rb = random.nextFloat();
 
-        // rb(Pgd-Xid)
+        // rb(gbest-Xid)
         len = (int) (b.size() * rb);
 
         for (j = 0; j < len; j++) {
@@ -327,16 +327,16 @@ public class PSO {
             // calculate fitness value of new swarm, get best solution
             for (k = 0; k < scale; k++) {
                 fitness[k] = evaluateLength(oPopulation[k]);
-                if (vPd[k] > fitness[k]) {
-                    vPd[k] = fitness[k];
-                    copyarrayNum(oPopulation[k], Pd[k]);
+                if (vpbest[k] > fitness[k]) {
+                    vpbest[k] = fitness[k];
+                    copyarrayNum(oPopulation[k], pbest[k]);
                     bestNum = k;
                 }
-                if (vPgd > vPd[k]) {
-                    System.out.println("Shortest distance: " + vPgd + " Generation: " + bestT);
+                if (vgbest > vpbest[k]) {
+                    System.out.println("Shortest distance: " + vgbest + " Generation: " + bestT);
                     bestT = t;
-                    vPgd = vPd[k];
-                    copyarrayNum(Pd[k], Pgd);
+                    vgbest = vpbest[k];
+                    copyarrayNum(pbest[k], gbest);
                 }
             }
         }
@@ -350,14 +350,14 @@ public class PSO {
         initListV();
 
         // make each particle remember its own best solution
-        copyarray(oPopulation, Pd);
+        copyarray(oPopulation, pbest);
 
         for (k = 0; k < scale; k++) {
             fitness[k] = evaluateLength(oPopulation[k]);
-            vPd[k] = fitness[k];
-            if (vPgd > vPd[k]) {
-                vPgd = vPd[k];
-                copyarrayNum(Pd[k], Pgd);
+            vpbest[k] = fitness[k];
+            if (vgbest > vpbest[k]) {
+                vgbest = vpbest[k];
+                copyarrayNum(pbest[k], gbest);
                 bestNum = k;
             }
         }
@@ -385,10 +385,10 @@ public class PSO {
         System.out.println("Best generation: ");
         System.out.println(bestT);
         System.out.println("Shortest distance: ");
-        System.out.println(vPgd);
+        System.out.println(vgbest);
         System.out.println("Best path: ");
         for (i = 0; i < pointNum; i++) {
-            System.out.print(Pgd[i] + ",");
+            System.out.print(gbest[i] + ",");
         }
 
     }
