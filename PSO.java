@@ -2,6 +2,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -386,6 +388,39 @@ public class PSO {
             System.out.print(gbest[i] + ",");
         }
 
+    }
+    public static void main(String[] args) throws IOException {
+        int pointNum = 14;
+
+        // set the path of data file
+        String tspData = "att48.txt";
+        
+        //String tspData = Files.readString(Paths.get("att48.txt"));
+        //System.out.println(tspData);
+        //int[] bestTour; // best path
+        //int bestLength; // shortest length
+        int[] x = new int[pointNum]; // matrix of X
+        int[] y = new int[pointNum]; // matrix of Y
+        
+
+        try {
+            x = ReadFile.getX(pointNum, tspData);
+            y = ReadFile.getY(pointNum, tspData);
+            for (int i = 0; i < pointNum; i++) {
+                x[i] += 30;
+                y[i] += 200;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int particleNum = 1000;
+        int generation = 10000;
+        float weight = (float)0.7;
+        int beta = 2;
+
+        PSO pso = new PSO(pointNum, generation, particleNum, weight, beta-1);
+        pso.initialize(tspData);
+        pso.solve();
     }
 
 }
