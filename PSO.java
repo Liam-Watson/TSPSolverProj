@@ -16,7 +16,7 @@ public class PSO {
     private int bestNum;
     private float inertiaWeight;
     private int MAX_GEN;// iteration time
-    private int scale;// particle num
+    private int numParticles;// particle num
 
     private int pointNum; // point num
     private int t;// current generation
@@ -55,7 +55,7 @@ public class PSO {
     public PSO(int cityNum, int g, int s, float w, int b) {
         this.pointNum = cityNum;
         this.MAX_GEN = g;
-        this.scale = s;
+        this.numParticles = s;
         this.inertiaWeight = w;
         this.begin = b;
     }
@@ -72,12 +72,12 @@ public class PSO {
 
         distance[pointNum - 1][pointNum - 1] = 0;
 
-        oPopulation = new int[scale][pointNum];
-        fitness = new int[scale];
+        oPopulation = new int[numParticles][pointNum];
+        fitness = new int[numParticles];
 
         // individual
-        pbest= new int[scale][pointNum];
-        vpbest= new int[scale];
+        pbest= new int[numParticles][pointNum];
+        vpbest= new int[numParticles];
 
         // global
         gbest = new int[pointNum];
@@ -115,7 +115,7 @@ public class PSO {
     // initialize particle swarm
     void initGroup() {
         int i, j, k;
-        for (k = 0; k < scale; k++) // swarm num
+        for (k = 0; k < numParticles; k++) // swarm num
         {
             // start point
             oPopulation[k][0] = begin;
@@ -142,7 +142,7 @@ public class PSO {
 
         listV = new ArrayList<ArrayList<SO>>();
 
-        for (int i = 0; i < scale; i++) {
+        for (int i = 0; i < numParticles; i++) {
             ArrayList<SO> list = new ArrayList<SO>();
             ra = random.nextInt(65535) % pointNum;
             for (int j = 0; j < ra; j++) {
@@ -226,7 +226,7 @@ public class PSO {
 
     // 二维数组拷贝
     public void copyarray(int[][] from, int[][] to) {
-        for (int i = 0; i < scale; i++) {
+        for (int i = 0; i < numParticles; i++) {
             for (int j = 0; j < pointNum; j++) {
                 to[i][j] = from[i][j];
             }
@@ -291,23 +291,18 @@ public class PSO {
     }
 
     public void evolution() {
-        int i, j, k;
-        int len = 0;
-        float ra = 0f;
-
-        ArrayList<SO> Vi;
-
+        int i, k;
         for (t = 0; t < MAX_GEN; t++) {
             // create concurrent threads to record particles' movement
             ArrayList<Callable<Void>> runnables = new ArrayList<>();
-            for (i = 0; i < scale; i++) {
+            for (i = 0; i < numParticles; i++) {
                 if (i == bestNum) continue;
 
-                final int ii = i;
+                final int bestIndex = i;
                 runnables.add(new Callable<Void>() {
                     @Override
                     public Void call() {
-                        particle(ii);
+                        particle(bestIndex);
                         return null;
                     }
                 });
@@ -325,7 +320,7 @@ public class PSO {
             }
 
             // calculate fitness value of new swarm, get best solution
-            for (k = 0; k < scale; k++) {
+            for (k = 0; k < numParticles; k++) {
                 fitness[k] = evaluateLength(oPopulation[k]);
                 if (vpbest[k] > fitness[k]) {
                     vpbest[k] = fitness[k];
@@ -352,7 +347,7 @@ public class PSO {
         // make each particle remember its own best solution
         copyarray(oPopulation, pbest);
 
-        for (k = 0; k < scale; k++) {
+        for (k = 0; k < numParticles; k++) {
             fitness[k] = evaluateLength(oPopulation[k]);
             vpbest[k] = fitness[k];
             if (vgbest > vpbest[k]) {
@@ -363,7 +358,7 @@ public class PSO {
         }
 
         System.out.println("Initial particle swarm...");
-        for (k = 0; k < scale; k++) {
+        for (k = 0; k < numParticles; k++) {
             for (i = 0; i < pointNum; i++) {
                 System.out.print(oPopulation[k][i] + ",");
             }
@@ -374,7 +369,7 @@ public class PSO {
         evolution();
 
         System.out.println("Final particle swarm...");
-        for (k = 0; k < scale; k++) {
+        for (k = 0; k < numParticles; k++) {
             for (i = 0; i < pointNum; i++) {
                 System.out.print(oPopulation[k][i] + ",");
             }
