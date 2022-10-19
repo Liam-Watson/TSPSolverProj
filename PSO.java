@@ -241,22 +241,22 @@ public class PSO {
     }
 
     private void particle(int i) {
-        ArrayList<SO> Vi;
+        ArrayList<SO> oldVelocityList;
         int len;
         int j;
         float ra;
         float rb;
-        ArrayList<SO> Vii = new ArrayList<SO>();
+        ArrayList<SO> newVelocityList = new ArrayList<SO>();
 
         // refresh velocity
-        // Vii=wVi+ra(Pid-Xid)+rb(gbest-Xid)
-        Vi = listV.get(i);
+        // newVelocityList=wVi+ra(Pid-Xid)+rb(gbest-Xid)
+        oldVelocityList = listV.get(i);
 
         // wVi+表示获取Vi中size*w取整个交换序列
-        len = (int) (Vi.size() * inertiaWeight);
+        len = (int) (oldVelocityList.size() * inertiaWeight);
 
         for (j = 0; j < len; j++) {
-            Vii.add(Vi.get(j));
+            newVelocityList.add(oldVelocityList.get(j));
         }
 
         // Pid-Xid
@@ -267,7 +267,7 @@ public class PSO {
         len = (int) (a.size() * ra);
 
         for (j = 0; j < len; j++) {
-            Vii.add(a.get(j));
+            newVelocityList.add(a.get(j));
         }
 
         // gbest-Xid
@@ -279,15 +279,15 @@ public class PSO {
 
         for (j = 0; j < len; j++) {
             SO tt = b.get(j);
-            Vii.add(tt);
+            newVelocityList.add(tt);
         }
 
-        // save new Vii
-        listV.set(i, Vii);
+        // save new newVelocityList
+        listV.set(i, newVelocityList);
 
         // refresh position
         // Xid’=Xid+Vid
-        add(oPopulation[i], Vii);
+        add(oPopulation[i], newVelocityList);
     }
 
     public void evolution() {
