@@ -113,7 +113,7 @@ public class PSO {
     }
 
     // initialize particle swarm
-    void initGroup() {
+    void initializeSwarm() {
         int i, j, k;
         for (k = 0; k < numParticles; k++) // swarm num
         {
@@ -135,7 +135,7 @@ public class PSO {
     }
 
     // initialize swapping list of each particle
-    void initListV() {
+    void initializeListV() {
         int ra;
         int ra1;
         int ra2;
@@ -195,7 +195,7 @@ public class PSO {
         for (int i = 0; i < pointNum; i++) {
             if (a[i] != temp[i]) {
                 // find the same index as a[i] in temp[]
-                index = findNum(temp, a[i]);
+                index = findNumIndex(temp, a[i]);
                 // change i and index in temp[]
                 changeIndex(temp, i, index);
                 // record swapping unit
@@ -207,7 +207,7 @@ public class PSO {
         return list;
     }
 
-    public int findNum(int[] arr, int num) {
+    public int findNumIndex(int[] arr, int num) {
         int index = -1;
         for (int i = 0; i < pointNum; i++) {
             if (arr[i] == num) {
@@ -225,7 +225,7 @@ public class PSO {
     }
 
     // 二维数组拷贝
-    public void copyarray(int[][] from, int[][] to) {
+    public void copyArray(int[][] from, int[][] to) {
         for (int i = 0; i < numParticles; i++) {
             for (int j = 0; j < pointNum; j++) {
                 to[i][j] = from[i][j];
@@ -234,13 +234,13 @@ public class PSO {
     }
 
     // 一维数组拷贝
-    public void copyarrayNum(int[] from, int[] to) {
+    public void copyArrayNum(int[] from, int[] to) {
         for (int i = 0; i < pointNum; i++) {
             to[i] = from[i];
         }
     }
 
-    private void particle(int i) {
+    private void updateParticle(int i) {
         ArrayList<SO> oldVelocityList;
         int len;
         int j;
@@ -290,7 +290,7 @@ public class PSO {
         add(particleSwarm[i], newVelocityList);
     }
 
-    public void evolution() {
+    public void evolveSwarm() {
         int i, k;
         for (t = 0; t < MAX_GEN; t++) {
             // create concurrent threads to record particles' movement
@@ -302,7 +302,7 @@ public class PSO {
                 runnables.add(new Callable<Void>() {
                     @Override
                     public Void call() {
-                        particle(bestIndex);
+                        updateParticle(bestIndex);
                         return null;
                     }
                 });
@@ -324,14 +324,14 @@ public class PSO {
                 fitness[k] = evaluateLength(particleSwarm[k]);
                 if (vpbest[k] > fitness[k]) {
                     vpbest[k] = fitness[k];
-                    copyarrayNum(particleSwarm[k], pbest[k]);
+                    copyArrayNum(particleSwarm[k], pbest[k]);
                     bestNum = k;
                 }
                 if (vgbest > vpbest[k]) {
                     System.out.println("Shortest distance: " + vgbest + " Generation: " + bestT);
                     bestT = t;
                     vgbest = vpbest[k];
-                    copyarrayNum(pbest[k], gbest);
+                    copyArrayNum(pbest[k], gbest);
                 }
             }
         }
@@ -341,18 +341,18 @@ public class PSO {
         int i;
         int k;
 
-        initGroup();
-        initListV();
+        initializeSwarm();
+        initializeListV();
 
         // make each particle remember its own best solution
-        copyarray(particleSwarm, pbest);
+        copyArray(particleSwarm, pbest);
 
         for (k = 0; k < numParticles; k++) {
             fitness[k] = evaluateLength(particleSwarm[k]);
             vpbest[k] = fitness[k];
             if (vgbest > vpbest[k]) {
                 vgbest = vpbest[k];
-                copyarrayNum(pbest[k], gbest);
+                copyArrayNum(pbest[k], gbest);
                 bestNum = k;
             }
         }
@@ -366,7 +366,7 @@ public class PSO {
             System.out.println("----" + fitness[k]);
         }
 
-        evolution();
+        evolveSwarm();
 
         System.out.println("Final particle swarm...");
         for (k = 0; k < numParticles; k++) {
