@@ -25,7 +25,7 @@ public class PSO {
 
     private int[][] distance; // matrix of distance
 
-    private int[][] oPopulation;// particle swarm
+    private int[][] particleSwarm;// particle swarm
     private ArrayList<ArrayList<SO>> listV;// swap list of each particle
 
     private int[][] pbest;// best solution of each particle among all generations
@@ -72,7 +72,7 @@ public class PSO {
 
         distance[pointNum - 1][pointNum - 1] = 0;
 
-        oPopulation = new int[numParticles][pointNum];
+        particleSwarm = new int[numParticles][pointNum];
         fitness = new int[numParticles];
 
         // individual
@@ -118,12 +118,12 @@ public class PSO {
         for (k = 0; k < numParticles; k++) // swarm num
         {
             // start point
-            oPopulation[k][0] = begin;
+            particleSwarm[k][0] = begin;
             for (i = 1; i < pointNum; ) // particle num
             {
-                oPopulation[k][i] = random.nextInt(65535) % pointNum;
+                particleSwarm[k][i] = random.nextInt(65535) % pointNum;
                 for (j = 0; j < i; j++) {
-                    if (oPopulation[k][i] == oPopulation[k][j] || oPopulation[k][i] == begin) {
+                    if (particleSwarm[k][i] == particleSwarm[k][j] || particleSwarm[k][i] == begin) {
                         break;
                     }
                 }
@@ -163,13 +163,13 @@ public class PSO {
         }
     }
 
-    public int evaluateLength(int[] chr) {
+    public int evaluateLength(int[] chromosome) {
         int len = 0;
         // point 1, 2, 3...
         for (int i = 1; i < pointNum; i++) {
-            len += distance[chr[i - 1]][chr[i]];
+            len += distance[chromosome[i - 1]][chromosome[i]];
         }
-        len += distance[chr[pointNum - 1]][chr[0]];
+        len += distance[chromosome[pointNum - 1]][chromosome[0]];
         return len;
     }
 
@@ -260,7 +260,7 @@ public class PSO {
         }
 
         // Pid-Xid
-        ArrayList<SO> a = minus(pbest[i], oPopulation[i]);
+        ArrayList<SO> a = minus(pbest[i], particleSwarm[i]);
         ra = random.nextFloat();
 
         // ra(Pid-Xid)
@@ -271,7 +271,7 @@ public class PSO {
         }
 
         // gbest-Xid
-        ArrayList<SO> b = minus(gbest, oPopulation[i]);
+        ArrayList<SO> b = minus(gbest, particleSwarm[i]);
         rb = random.nextFloat();
 
         // rb(gbest-Xid)
@@ -287,7 +287,7 @@ public class PSO {
 
         // refresh position
         // Xid’=Xid+Vid
-        add(oPopulation[i], newVelocityList);
+        add(particleSwarm[i], newVelocityList);
     }
 
     public void evolution() {
@@ -321,10 +321,10 @@ public class PSO {
 
             // calculate fitness value of new swarm, get best solution
             for (k = 0; k < numParticles; k++) {
-                fitness[k] = evaluateLength(oPopulation[k]);
+                fitness[k] = evaluateLength(particleSwarm[k]);
                 if (vpbest[k] > fitness[k]) {
                     vpbest[k] = fitness[k];
-                    copyarrayNum(oPopulation[k], pbest[k]);
+                    copyarrayNum(particleSwarm[k], pbest[k]);
                     bestNum = k;
                 }
                 if (vgbest > vpbest[k]) {
@@ -345,10 +345,10 @@ public class PSO {
         initListV();
 
         // make each particle remember its own best solution
-        copyarray(oPopulation, pbest);
+        copyarray(particleSwarm, pbest);
 
         for (k = 0; k < numParticles; k++) {
-            fitness[k] = evaluateLength(oPopulation[k]);
+            fitness[k] = evaluateLength(particleSwarm[k]);
             vpbest[k] = fitness[k];
             if (vgbest > vpbest[k]) {
                 vgbest = vpbest[k];
@@ -360,7 +360,7 @@ public class PSO {
         System.out.println("Initial particle swarm...");
         for (k = 0; k < numParticles; k++) {
             for (i = 0; i < pointNum; i++) {
-                System.out.print(oPopulation[k][i] + ",");
+                System.out.print(particleSwarm[k][i] + ",");
             }
             System.out.println();
             System.out.println("----" + fitness[k]);
@@ -371,7 +371,7 @@ public class PSO {
         System.out.println("Final particle swarm...");
         for (k = 0; k < numParticles; k++) {
             for (i = 0; i < pointNum; i++) {
-                System.out.print(oPopulation[k][i] + ",");
+                System.out.print(particleSwarm[k][i] + ",");
             }
             System.out.println();
             System.out.println("----" + fitness[k]);
